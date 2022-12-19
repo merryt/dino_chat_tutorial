@@ -1,4 +1,16 @@
 import { Application, Router, helpers } from "https://deno.land/x/oak/mod.ts";
+import { v4 } from "https://deno.land/std@0.91.0/uuid/mod.ts";
+import { Database, SQLite3Connector } from 'https://deno.land/x/denodb/mod.ts';
+
+const connector = new SQLite3Connector({
+  filepath: './db.sqlite',
+});
+
+const db = new Database(connector);
+
+
+
+
 
 const connectedClients = new Map();
 
@@ -33,8 +45,9 @@ router.get('/post/:postId', (ctx) =>{
 } )
 
 router.get('/users/:userId', (ctx) => {
+    const id = v4.generate();
     const { userId } = helpers.getQuery(ctx, { mergeParams: true });
-    ctx.response.body = `GET HTTP method on user/${userId} resource`;
+    ctx.response.body = `GET HTTP method on user/${userId} resource. Users id is ${id}`;
   });
   
 
