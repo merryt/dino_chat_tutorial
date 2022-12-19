@@ -1,4 +1,4 @@
-import { Application, Router } from "https://deno.land/x/oak/mod.ts";
+import { Application, Router, helpers } from "https://deno.land/x/oak/mod.ts";
 
 const connectedClients = new Map();
 
@@ -22,6 +22,22 @@ function broadcast_usernames(){
         usernames: usernames
     }))
 }
+
+router.get('/', (ctx) => {ctx.response.body = 'Received a GET HTTP method';});
+router.post('/', (ctx) => {ctx.response.body = 'Received a POST HTTP method';});
+router.put('/', (ctx) => {ctx.response.body = 'Received a PUT HTTP method';});
+router.delete('/', (ctx) => {ctx.response.body = 'Received a DELETE HTTP method';});
+
+router.get('/post/:postId', (ctx) =>{
+    ctx.response.body = `returning page for ${ctx.params.postId}`
+} )
+
+router.get('/users/:userId', (ctx) => {
+    const { userId } = helpers.getQuery(ctx, { mergeParams: true });
+    ctx.response.body = `GET HTTP method on user/${userId} resource`;
+  });
+  
+
 
 router.get("/start_web_socket", async (ctx) =>{
     const socket = await ctx.upgrade();
