@@ -10,8 +10,6 @@ const db = new Database(connector);
 
 
 
-
-
 const connectedClients = new Map();
 
 const app = new Application();
