@@ -1,6 +1,7 @@
 import { Application, Router, helpers } from "https://deno.land/x/oak/mod.ts";
 import { v4 } from "https://deno.land/std@0.91.0/uuid/mod.ts";
 import { Database, SQLite3Connector } from 'https://deno.land/x/denodb/mod.ts';
+import { users, messages } from "./data.ts"
 
 const connector = new SQLite3Connector({
   filepath: './db.sqlite',
@@ -40,7 +41,30 @@ router.delete('/', (ctx) => {ctx.response.body = 'Received a DELETE HTTP method'
 
 router.get('/post/:postId', (ctx) =>{
     ctx.response.body = `returning page for ${ctx.params.postId}`
-} )
+});
+
+router.get('/users/', (ctx) => {
+    console.log(users)
+    ctx.response.body = `getting all users`
+});
+
+router.post('/users/', async (ctx) => {
+    console.log("posting user")
+    const id = v4.generate();
+    console.log(id)
+    // todo, figure out how to curl json
+    // current best guess is curl -X POST -H "Content-Type:application/json" http://localhost:8080/users/ -d "{data:'123test'}"
+    const { value } = ctx.request.body({ type: 'json' });
+    console.log(value)
+    const { text } = await value;
+    console.log(text)
+    users.set(id, {
+        id,
+        username: text,
+    });
+    console.log(users)
+    ctx.response.body = users.get(id);
+});
 
 router.get('/users/:userId', (ctx) => {
     const id = v4.generate();
@@ -48,6 +72,7 @@ router.get('/users/:userId', (ctx) => {
     ctx.response.body = `GET HTTP method on user/${userId} resource. Users id is ${id}`;
   });
   
+router.delete('/users/:userId', (ctx) => {ctx.response.body = `PUT DELETE method on user/${ctx.params.userId} resource`;});
 
 
 router.get("/start_web_socket", async (ctx) =>{
